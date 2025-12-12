@@ -82,6 +82,9 @@ void GLView::initializeGL() {
   initializeOpenGLFunctions();
 
   m_prog = makeProgram(kVert, kFrag);
+  m_fpsTimer.start();
+  m_frameCount = 0;
+
   createFullscreenQuad();
 
   createTextureAndPBO(m_simW, m_simH);
@@ -109,6 +112,17 @@ void GLView::paintGL() {
       m_sim.stepAndRenderToPBO(); // CUDA writes RGBA8 into the PBO
     }
   }
+  
+  // FPS update (every ~1s)
+  m_frameCount++;
+  const qint64 ms = m_fpsTimer.elapsed();
+  if (ms >= 1000) {
+    const double fps = (double)m_frameCount * 1000.0 / (double)ms;
+    emit fpsChanged(fps);
+    m_frameCount = 0;
+    m_fpsTimer.restart();
+  }
+
 
   // Upload PBO -> texture (GPU-side copy)
   glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pbo);

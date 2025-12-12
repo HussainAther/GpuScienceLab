@@ -12,6 +12,18 @@ public:
   explicit GLView(QWidget* parent = nullptr);
   ~GLView() override;
 
+  SimulationParams params() const { return m_sim.params(); }
+
+public slots:
+  void setRunning(bool on) { m_running = on; }
+  void toggleRunning() { m_running = !m_running; }
+  void resetSim() { m_sim.reset(); }
+  void setPreset(int idx) { m_sim.setPreset(idx); }
+  void setParams(const SimulationParams& p) { m_sim.setParams(p); }
+
+signals:
+  void fpsChanged(double fps);
+
 protected:
   void initializeGL() override;
   void resizeGL(int w, int h) override;
@@ -23,9 +35,12 @@ private:
   void createTextureAndPBO(int w, int h);
 
   QTimer m_tick;
-  QElapsedTimer m_clock;
+  QElapsedTimer m_fpsTimer;
 
   bool m_running = true;
+
+  // FPS bookkeeping
+  int m_frameCount = 0;
 
   GLuint m_tex = 0;
   GLuint m_pbo = 0;

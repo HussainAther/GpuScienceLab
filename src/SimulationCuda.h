@@ -17,7 +17,9 @@ public:
   void reset();
   void setPreset(int idx);
 
-  // CUDA-OpenGL interop
+  void setParams(const SimulationParams& p) { m_p = p; }
+  SimulationParams params() const { return m_p; }
+
   void registerPBO(unsigned int glPbo);
   void stepAndRenderToPBO();
 
@@ -25,14 +27,12 @@ private:
   int m_w = 0, m_h = 0;
   SimulationParams m_p{};
 
-  // Device buffers (ping-pong)
   float* d_U0 = nullptr;
   float* d_V0 = nullptr;
   float* d_U1 = nullptr;
   float* d_V1 = nullptr;
   bool m_flip = false;
 
-  // CUDA-GL
   void* m_cudaPboResource = nullptr; // cudaGraphicsResource*
 };
 
